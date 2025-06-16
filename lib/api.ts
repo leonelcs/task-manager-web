@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
@@ -6,6 +7,38 @@ export const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Add request interceptor to always include auth token
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = Cookies.get('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor to handle auth errors
+apiClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      // Remove invalid token
+      Cookies.remove('token');
+      // Redirect to login if not already there
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Types based on the task-manager API
 export interface Task {
@@ -73,12 +106,24 @@ export const api = {
     task_type?: string;
     impact_size?: string;
   }) => {
-    const response = await apiClient.get('/api/tasks', { params });
+    // Filter out empty string parameters
+    const filteredParams: Record<string, string> = {};
+    if (params) {
+      for (const key in params) {
+        if (Object.prototype.hasOwnProperty.call(params, key)) {
+          const value = params[key as keyof typeof params];
+          if (value !== undefined && value !== '') {
+            filteredParams[key] = value;
+          }
+        }
+      }
+    }
+    const response = await apiClient.get('/api/tasks/', { params: filteredParams });
     return response.data;
   },
 
   createTask: async (task: Partial<Task>) => {
-    const response = await apiClient.post('/api/tasks', task);
+    const response = await apiClient.post('/api/tasks/', task); // Added trailing slash
     return response.data;
   },
 

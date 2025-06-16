@@ -33,6 +33,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const token = Cookies.get('auth_token');
     if (token) {
+      // Set the token in the API client immediately
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       // Verify token and get user data
       fetchUserProfile(token);
     } else {
@@ -42,9 +44,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserProfile = async (token: string) => {
     try {
-      // Set the token in the API client
-      apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
       // Fetch user profile
       const response = await apiClient.get('/api/auth/me');
       setUser(response.data);

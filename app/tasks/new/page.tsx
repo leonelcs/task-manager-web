@@ -23,8 +23,6 @@ export default function NewTaskPage() {
     task_type: 'project' as const,
     impact_size: 'pebbles' as const,
     estimated_duration: '',
-    dopamine_reward: '',
-    energy_level_required: 'medium',
     project_id: '',
     due_date: ''
   });
@@ -34,12 +32,16 @@ export default function NewTaskPage() {
     setIsSubmitting(true);
 
     try {
-      const taskData = {
+      const taskData: any = {
         ...formData,
         estimated_duration: formData.estimated_duration ? parseInt(formData.estimated_duration) : undefined,
-        project_id: formData.project_id ? parseInt(formData.project_id) : undefined,
         due_date: formData.due_date || undefined
       };
+
+      // Only include project_id if a project is actually selected
+      if (formData.project_id && formData.project_id !== '') {
+        taskData.project_id = parseInt(formData.project_id);
+      }
 
       await api.createTask(taskData);
       router.push('/tasks');
@@ -183,23 +185,6 @@ export default function NewTaskPage() {
             </div>
 
             <div>
-              <label htmlFor="energy_level_required" className="block text-sm font-medium text-gray-700 mb-1">
-                Energy Level Required
-              </label>
-              <select
-                id="energy_level_required"
-                name="energy_level_required"
-                value={formData.energy_level_required}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adhd-primary-500"
-              >
-                <option value="low">Low Energy</option>
-                <option value="medium">Medium Energy</option>
-                <option value="high">High Energy</option>
-              </select>
-            </div>
-
-            <div>
               <label htmlFor="project_id" className="block text-sm font-medium text-gray-700 mb-1">
                 Project
               </label>
@@ -221,26 +206,11 @@ export default function NewTaskPage() {
           </div>
         </div>
 
-        {/* Motivation & Timing */}
+        {/* Timing */}
         <div className="border-t pt-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Motivation & Timing</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Timing</h3>
           
           <div className="space-y-4">
-            <div>
-              <label htmlFor="dopamine_reward" className="block text-sm font-medium text-gray-700 mb-1">
-                Dopamine Reward 🎉
-              </label>
-              <input
-                type="text"
-                id="dopamine_reward"
-                name="dopamine_reward"
-                value={formData.dopamine_reward}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adhd-primary-500"
-                placeholder="e.g. Coffee break, favorite snack, 15min video..."
-              />
-            </div>
-
             <div>
               <label htmlFor="due_date" className="block text-sm font-medium text-gray-700 mb-1">
                 Due Date
