@@ -6,28 +6,68 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 15000, // 15 seconds timeout
 });
 
-// Add request interceptor to always include auth token
+// Enhanced logging for debugging
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+// Add request interceptor to always include auth token and log requests
 apiClient.interceptors.request.use(
   (config) => {
     const token = Cookies.get('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+    
+    // Debug logging
+    if (isDevelopment) {
+      console.log('🚀 API Request:', {
+        method: config.method?.toUpperCase(),
+        url: `${config.baseURL}${config.url}`,
+        headers: config.headers,
+        data: config.data,
+        timeout: config.timeout
+      });
+    }
+    
     return config;
   },
   (error) => {
+    if (isDevelopment) {
+      console.error('❌ API Request Error:', error);
+    }
     return Promise.reject(error);
   }
 );
 
-// Add response interceptor to handle auth errors
+// Add response interceptor to handle auth errors and log responses
 apiClient.interceptors.response.use(
   (response) => {
+    // Debug logging
+    if (isDevelopment) {
+      console.log('✅ API Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.config.url,
+        data: response.data,
+        headers: response.headers
+      });
+    }
     return response;
   },
   (error) => {
+    if (isDevelopment) {
+      console.error('❌ API Response Error:', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        url: error.config?.url,
+        data: error.response?.data,
+        timeout: error.code === 'ECONNABORTED' ? 'Request timed out' : false
+      });
+    }
+    
     if (error.response?.status === 401) {
       // Remove invalid token
       Cookies.remove('token');
@@ -123,7 +163,7 @@ export const api = {
   },
 
   createTask: async (task: Partial<Task>) => {
-    const response = await apiClient.post('/api/tasks/', task); // Added trailing slash
+    const response = await apiClient.post('/api/tasks', task); // Added trailing slash
     return response.data;
   },
 

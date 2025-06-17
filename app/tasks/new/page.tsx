@@ -41,6 +41,8 @@ export default function NewTaskPage() {
       // Only include project_id if a project is actually selected
       if (formData.project_id && formData.project_id !== '') {
         taskData.project_id = parseInt(formData.project_id);
+      } else {
+        delete taskData.project_id;
       }
 
       await api.createTask(taskData);
