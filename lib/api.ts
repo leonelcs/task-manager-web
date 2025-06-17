@@ -116,6 +116,7 @@ export interface Group {
   name: string;
   description?: string;
   member_count: number;
+  project_count?: number;
   is_active: boolean;
   created_at: string;
   adhd_settings?: {
@@ -135,6 +136,30 @@ export interface User {
   profile_picture_url?: string;
   is_active: boolean;
   created_at: string;
+}
+
+export interface GroupInvitation {
+  id: number;
+  token: string;
+  group_id: number;
+  invited_email: string;
+  invited_user_id?: number;
+  invited_by: number;
+  role: string;
+  status: 'pending' | 'accepted' | 'declined' | 'expired';
+  message?: string;
+  created_at: string;
+  expires_at?: string;
+  responded_at?: string;
+  group_name?: string;
+  group_description?: string;
+  inviter_name?: string;
+}
+
+export interface GroupInvitationList {
+  invitations: GroupInvitation[];
+  total: number;
+  pending_count: number;
 }
 
 // API functions
@@ -204,6 +229,53 @@ export const api = {
 
   getGroup: async (groupId: number) => {
     const response = await apiClient.get(`/api/groups/${groupId}`);
+    return response.data;
+  },
+
+  updateGroup: async (groupId: number, group: Partial<Group>) => {
+    const response = await apiClient.put(`/api/groups/${groupId}`, group);
+    return response.data;
+  },
+
+  deleteGroup: async (groupId: number) => {
+    const response = await apiClient.delete(`/api/groups/${groupId}`);
+    return response.data;
+  },
+
+  // Invitations
+  createInvitation: async (invitation: {
+    group_id: number;
+    invited_email: string;
+    message?: string;
+    role?: string;
+  }) => {
+    const { group_id, ...payload } = invitation;
+    const response = await apiClient.post(`/api/invitations/groups/${group_id}/invite`, {
+      invited_email: payload.invited_email,
+      message: payload.message,
+      role: payload.role || 'member'
+    });
+    return response.data;
+  },
+
+  acceptInvitation: async (token: string) => {
+    const response = await apiClient.post(`/api/invitations/${token}/accept`, {
+      welcome_preferences: {
+        receive_welcome_email: true,
+        join_group_focus_session: false,
+        share_energy_patterns: false
+      }
+    });
+    return response.data;
+  },
+
+  declineInvitation: async (token: string) => {
+    const response = await apiClient.post(`/api/invitations/${token}/decline`);
+    return response.data;
+  },
+
+  getPendingInvitations: async () => {
+    const response = await apiClient.get('/api/invitations/users/me/invitations');
     return response.data;
   },
 
