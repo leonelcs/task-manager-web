@@ -104,11 +104,41 @@ export interface Project {
   project_type: 'personal' | 'shared' | 'public';
   status: 'planning' | 'active' | 'on_hold' | 'completed' | 'archived';
   owner_id: number;
+  group_id?: number;
+  is_active: boolean;
+  is_public_joinable: boolean;
+  max_collaborators: number;
   collaborator_count: number;
   task_count: number;
   completion_percentage: number;
   created_at: string;
+  updated_at?: string;
+  completed_at?: string;
+  start_date?: string;
   due_date?: string;
+  adhd_features?: {
+    use_pomodoro_sessions?: boolean;
+    enable_group_accountability?: boolean;
+    shared_dopamine_rewards?: boolean;
+    collective_break_reminders?: boolean;
+    energy_sync_recommendations?: boolean;
+    difficulty_balancing?: boolean;
+    hyperfocus_protection?: boolean;
+    progress_celebrations?: {
+      milestone_rewards?: boolean;
+      team_celebrations?: boolean;
+      individual_recognition?: boolean;
+    };
+  };
+  metrics?: {
+    total_tasks?: number;
+    completed_tasks?: number;
+    total_focus_sessions?: number;
+    total_break_time?: number;
+    average_task_duration?: number;
+    collaboration_score?: number;
+    dopamine_events?: number;
+  };
 }
 
 export interface Group {
@@ -213,6 +243,23 @@ export const api = {
 
   getProject: async (projectId: number) => {
     const response = await apiClient.get(`/api/projects/${projectId}`);
+    return response.data;
+  },
+
+  updateProject: async (projectId: number, project: Partial<Project>) => {
+    const response = await apiClient.put(`/api/projects/${projectId}`, project);
+    return response.data;
+  },
+
+  inviteToProject: async (projectId: number, invitation: {
+    user_email: string;
+    role?: string;
+    message?: string;
+  }) => {
+    const response = await apiClient.post(`/api/projects/${projectId}/invite`, {
+      project_id: projectId,
+      ...invitation
+    });
     return response.data;
   },
 
