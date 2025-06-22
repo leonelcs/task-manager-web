@@ -10,7 +10,7 @@ import Link from 'next/link';
 export default function EditProjectPage() {
   const router = useRouter();
   const params = useParams();
-  const projectId = parseInt(params.id as string);
+  const projectId = params.id as string;
   const queryClient = useQueryClient();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,7 +35,7 @@ export default function EditProjectPage() {
     status: 'planning' as const,
     is_public_joinable: false,
     max_collaborators: 10,
-    group_id: '',
+    shared_group_id: '',
     start_date: '',
     due_date: ''
   });
@@ -50,7 +50,7 @@ export default function EditProjectPage() {
         status: project.status || 'planning',
         is_public_joinable: project.is_public_joinable || false,
         max_collaborators: project.max_collaborators || 10,
-        group_id: project.group_id ? project.group_id.toString() : '',
+        shared_group_id: project.shared_group_id ? project.shared_group_id.toString() : '',
         start_date: project.start_date ? project.start_date.split('T')[0] : '',
         due_date: project.due_date ? project.due_date.split('T')[0] : ''
       });
@@ -81,11 +81,11 @@ export default function EditProjectPage() {
         due_date: formData.due_date || undefined
       };
 
-      // Only include group_id if a group is actually selected
-      if (formData.group_id && formData.group_id !== '') {
-        projectData.group_id = parseInt(formData.group_id);
+      // Only include shared_group_id if a group is actually selected
+      if (formData.shared_group_id && formData.shared_group_id !== '') {
+        projectData.shared_group_id = formData.shared_group_id;
       } else {
-        projectData.group_id = null; // Explicitly remove group association
+        projectData.shared_group_id = null; // Explicitly remove group association
       }
 
       updateMutation.mutate(projectData);
@@ -234,14 +234,14 @@ export default function EditProjectPage() {
 
           {/* Group Selection */}
           <div className="mt-4">
-            <label htmlFor="group_id" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="shared_group_id" className="block text-sm font-medium text-gray-700 mb-1">
               <Users className="inline h-4 w-4 mr-1" />
-              Associate with Group (Optional)
+              Associate with Shared Group (Optional)
             </label>
             <select
-              id="group_id"
-              name="group_id"
-              value={formData.group_id}
+              id="shared_group_id"
+              name="shared_group_id"
+              value={formData.shared_group_id}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adhd-primary-500"
             >

@@ -11,7 +11,7 @@ import InviteProjectMembersModal from '@/components/InviteProjectMembersModal';
 
 export default function ProjectDetailPage() {
   const params = useParams();
-  const projectId = parseInt(params.id as string);
+  const projectId = params.id as string;
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const { data: project, isLoading } = useQuery({
@@ -40,7 +40,7 @@ export default function ProjectDetailPage() {
     );
   }
 
-  const projectColor = getProjectColor(project.project_type, projectId);
+  const projectColor = getProjectColor(project.project_type, 0);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -165,10 +165,10 @@ export default function ProjectDetailPage() {
               </div>
             )}
 
-            {project.group_id && (
+            {project.shared_group_id && (
               <div>
                 <label className="text-sm font-medium text-gray-700">Associated Group</label>
-                <p className="mt-1 text-sm text-gray-900">Group #{project.group_id}</p>
+                <p className="mt-1 text-sm text-gray-900">Group #{project.shared_group_id}</p>
               </div>
             )}
           </div>

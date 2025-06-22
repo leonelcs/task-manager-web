@@ -10,7 +10,7 @@ import InviteMembersModal from '@/components/InviteMembersModal';
 
 export default function GroupDetailPage() {
   const params = useParams();
-  const groupId = parseInt(params.id as string);
+  const groupId = params.id as string; // Now using string instead of parseInt
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const { data: group, isLoading } = useQuery({
@@ -116,88 +116,86 @@ export default function GroupDetailPage() {
       </div>
 
       {/* ADHD Features */}
-      {group.adhd_settings && (
-        <div className="card">
-          <div className="flex items-center gap-2 mb-4">
-            <Settings className="h-5 w-5 text-adhd-primary-500" />
-            <h2 className="text-xl font-semibold text-gray-900">ADHD Features</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {group.adhd_settings.group_focus_sessions && (
-              <div className="flex items-start gap-3 p-4 bg-adhd-primary-50 rounded-md border-l-4 border-adhd-primary-500">
-                <Target className="h-6 w-6 text-adhd-primary-600 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-adhd-primary-900 mb-1">Group Focus Sessions</h3>
-                  <p className="text-sm text-adhd-primary-700">
-                    Body doubling sessions to work together and stay focused through shared energy and accountability.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {group.adhd_settings.shared_energy_tracking && (
-              <div className="flex items-start gap-3 p-4 bg-adhd-secondary-50 rounded-md border-l-4 border-adhd-secondary-500">
-                <Zap className="h-6 w-6 text-adhd-secondary-600 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-adhd-secondary-900 mb-1">Shared Energy Tracking</h3>
-                  <p className="text-sm text-adhd-secondary-700">
-                    Members can share their energy levels to better coordinate collaboration and support.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {group.adhd_settings.group_dopamine_celebrations && (
-              <div className="flex items-start gap-3 p-4 bg-pebbles-50 rounded-md border-l-4 border-pebbles-500">
-                <div className="text-2xl mt-1">🎉</div>
-                <div>
-                  <h3 className="font-semibold text-pebbles-900 mb-1">Group Dopamine Celebrations</h3>
-                  <p className="text-sm text-pebbles-700">
-                    Collective celebration of wins and achievements to amplify positive reinforcement and motivation.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {group.adhd_settings.collaborative_task_chunking && (
-              <div className="flex items-start gap-3 p-4 bg-rock-50 rounded-md border-l-4 border-rock-500">
-                <Users className="h-6 w-6 text-rock-600 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-rock-900 mb-1">Collaborative Task Chunking</h3>
-                  <p className="text-sm text-rock-700">
-                    Work together to break down complex tasks into manageable pieces using collective wisdom.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {group.adhd_settings.group_break_reminders && (
-              <div className="flex items-start gap-3 p-4 bg-sand-50 rounded-md border-l-4 border-sand-500">
-                <div className="text-2xl mt-1">⏰</div>
-                <div>
-                  <h3 className="font-semibold text-sand-900 mb-1">Group Break Reminders</h3>
-                  <p className="text-sm text-sand-700">
-                    Gentle reminders to take breaks and avoid hyperfocus burnout through community care.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {group.adhd_settings.accountability_features && (
-              <div className="flex items-start gap-3 p-4 bg-adhd-primary-50 rounded-md border-l-4 border-adhd-primary-500">
-                <Shield className="h-6 w-6 text-adhd-primary-600 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-adhd-primary-900 mb-1">Accountability Features</h3>
-                  <p className="text-sm text-adhd-primary-700">
-                    Supportive check-ins and progress sharing to help members stay on track with their goals.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+      <div className="card">
+        <div className="flex items-center gap-2 mb-4">
+          <Settings className="h-5 w-5 text-adhd-primary-500" />
+          <h2 className="text-xl font-semibold text-gray-900">ADHD Features</h2>
         </div>
-      )}
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {group.group_focus_sessions && (
+            <div className="flex items-start gap-3 p-4 bg-adhd-primary-50 rounded-md border-l-4 border-adhd-primary-500">
+              <Target className="h-6 w-6 text-adhd-primary-600 mt-1" />
+              <div>
+                <h3 className="font-semibold text-adhd-primary-900 mb-1">Group Focus Sessions</h3>
+                <p className="text-sm text-adhd-primary-700">
+                  Body doubling sessions to work together and stay focused through shared energy and accountability.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {group.shared_energy_tracking && (
+            <div className="flex items-start gap-3 p-4 bg-adhd-secondary-50 rounded-md border-l-4 border-adhd-secondary-500">
+              <Zap className="h-6 w-6 text-adhd-secondary-600 mt-1" />
+              <div>
+                <h3 className="font-semibold text-adhd-secondary-900 mb-1">Shared Energy Tracking</h3>
+                <p className="text-sm text-adhd-secondary-700">
+                  Members can share their energy levels to better coordinate collaboration and support.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {group.group_dopamine_celebrations && (
+            <div className="flex items-start gap-3 p-4 bg-pebbles-50 rounded-md border-l-4 border-pebbles-500">
+              <div className="text-2xl mt-1">🎉</div>
+              <div>
+                <h3 className="font-semibold text-pebbles-900 mb-1">Group Dopamine Celebrations</h3>
+                <p className="text-sm text-pebbles-700">
+                  Collective celebration of wins and achievements to amplify positive reinforcement and motivation.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {group.collaborative_task_chunking && (
+            <div className="flex items-start gap-3 p-4 bg-rock-50 rounded-md border-l-4 border-rock-500">
+              <Users className="h-6 w-6 text-rock-600 mt-1" />
+              <div>
+                <h3 className="font-semibold text-rock-900 mb-1">Collaborative Task Chunking</h3>
+                <p className="text-sm text-rock-700">
+                  Work together to break down complex tasks into manageable pieces using collective wisdom.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {group.group_break_reminders && (
+            <div className="flex items-start gap-3 p-4 bg-sand-50 rounded-md border-l-4 border-sand-500">
+              <div className="text-2xl mt-1">⏰</div>
+              <div>
+                <h3 className="font-semibold text-sand-900 mb-1">Group Break Reminders</h3>
+                <p className="text-sm text-sand-700">
+                  Gentle reminders to take breaks and avoid hyperfocus burnout through community care.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {group.accountability_features && (
+            <div className="flex items-start gap-3 p-4 bg-adhd-primary-50 rounded-md border-l-4 border-adhd-primary-500">
+              <Shield className="h-6 w-6 text-adhd-primary-600 mt-1" />
+              <div>
+                <h3 className="font-semibold text-adhd-primary-900 mb-1">Accountability Features</h3>
+                <p className="text-sm text-adhd-primary-700">
+                  Supportive check-ins and progress sharing to help members stay on track with their goals.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Community Guidelines */}
       <div className="card">

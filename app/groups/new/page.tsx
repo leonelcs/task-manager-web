@@ -13,14 +13,12 @@ export default function NewGroupPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    adhd_settings: {
-      group_focus_sessions: true,
-      shared_energy_tracking: false,
-      group_dopamine_celebrations: true,
-      collaborative_task_chunking: true,
-      group_break_reminders: true,
-      accountability_features: true
-    }
+    group_focus_sessions: true,
+    shared_energy_tracking: false,
+    group_dopamine_celebrations: true,
+    collaborative_task_chunking: true,
+    group_break_reminders: true,
+    accountability_features: true
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,10 +45,7 @@ export default function NewGroupPage() {
   const handleSettingChange = (setting: string, value: boolean) => {
     setFormData(prev => ({
       ...prev,
-      adhd_settings: {
-        ...prev.adhd_settings,
-        [setting]: value
-      }
+      [setting]: value
     }));
   };
 
@@ -133,7 +128,7 @@ export default function NewGroupPage() {
                 <input
                   type="checkbox"
                   id="group_focus_sessions"
-                  checked={formData.adhd_settings.group_focus_sessions}
+                  checked={formData.group_focus_sessions}
                   onChange={(e) => handleSettingChange('group_focus_sessions', e.target.checked)}
                   className="h-4 w-4 text-adhd-primary-600 focus:ring-adhd-primary-500 border-gray-300 rounded"
                 />
@@ -154,7 +149,7 @@ export default function NewGroupPage() {
                 <input
                   type="checkbox"
                   id="shared_energy_tracking"
-                  checked={formData.adhd_settings.shared_energy_tracking}
+                  checked={formData.shared_energy_tracking}
                   onChange={(e) => handleSettingChange('shared_energy_tracking', e.target.checked)}
                   className="h-4 w-4 text-adhd-secondary-600 focus:ring-adhd-secondary-500 border-gray-300 rounded"
                 />
@@ -175,7 +170,7 @@ export default function NewGroupPage() {
                 <input
                   type="checkbox"
                   id="group_dopamine_celebrations"
-                  checked={formData.adhd_settings.group_dopamine_celebrations}
+                  checked={formData.group_dopamine_celebrations}
                   onChange={(e) => handleSettingChange('group_dopamine_celebrations', e.target.checked)}
                   className="h-4 w-4 text-pebbles-600 focus:ring-pebbles-500 border-gray-300 rounded"
                 />
@@ -195,7 +190,7 @@ export default function NewGroupPage() {
                 <input
                   type="checkbox"
                   id="collaborative_task_chunking"
-                  checked={formData.adhd_settings.collaborative_task_chunking}
+                  checked={formData.collaborative_task_chunking}
                   onChange={(e) => handleSettingChange('collaborative_task_chunking', e.target.checked)}
                   className="h-4 w-4 text-rock-600 focus:ring-rock-500 border-gray-300 rounded"
                 />
@@ -216,7 +211,7 @@ export default function NewGroupPage() {
                 <input
                   type="checkbox"
                   id="group_break_reminders"
-                  checked={formData.adhd_settings.group_break_reminders}
+                  checked={formData.group_break_reminders}
                   onChange={(e) => handleSettingChange('group_break_reminders', e.target.checked)}
                   className="h-4 w-4 text-sand-600 focus:ring-sand-500 border-gray-300 rounded"
                 />
@@ -236,7 +231,7 @@ export default function NewGroupPage() {
                 <input
                   type="checkbox"
                   id="accountability_features"
-                  checked={formData.adhd_settings.accountability_features}
+                  checked={formData.accountability_features}
                   onChange={(e) => handleSettingChange('accountability_features', e.target.checked)}
                   className="h-4 w-4 text-adhd-primary-600 focus:ring-adhd-primary-500 border-gray-300 rounded"
                 />

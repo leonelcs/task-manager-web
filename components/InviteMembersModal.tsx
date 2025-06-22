@@ -8,7 +8,7 @@ import { X, Mail, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
 interface InviteMembersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  groupId: number;
+  groupId: string;
   groupName: string;
 }
 
@@ -26,8 +26,8 @@ export default function InviteMembersModal({
   const queryClient = useQueryClient();
 
   const inviteMutation = useMutation({
-    mutationFn: (data: { group_id: number; invited_email: string; message?: string; role?: string }) =>
-      api.createInvitation(data),
+    mutationFn: (data: { group_id: string; invited_email: string; message?: string; role?: string }) =>
+      api.createSharedGroupInvitation(data),
     onSuccess: () => {
       setSuccessMessage('Invitation sent successfully! 🎉');
       setEmail('');

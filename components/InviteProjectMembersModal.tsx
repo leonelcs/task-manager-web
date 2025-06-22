@@ -8,7 +8,7 @@ import { X, Mail, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
 interface InviteProjectMembersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  projectId: number;
+  projectId: string;
   projectName: string;
 }
 

@@ -82,7 +82,7 @@ apiClient.interceptors.response.use(
 
 // Types based on the task-manager API
 export interface Task {
-  id: number;
+  id: string;
   title: string;
   description?: string;
   status: 'todo' | 'in_progress' | 'completed' | 'paused';
@@ -94,17 +94,17 @@ export interface Task {
   due_date?: string;
   dopamine_reward?: string;
   energy_level_required?: string;
-  project_id?: number;
+  project_id?: string;
 }
 
 export interface Project {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   project_type: 'personal' | 'shared' | 'public';
   status: 'planning' | 'active' | 'on_hold' | 'completed' | 'archived';
-  owner_id: number;
-  group_id?: number;
+  owner_id: string;
+  shared_group_id?: string;
   is_active: boolean;
   is_public_joinable: boolean;
   max_collaborators: number;
@@ -141,26 +141,27 @@ export interface Project {
   };
 }
 
-export interface Group {
-  id: number;
+export interface SharedGroup {
+  id: string;
   name: string;
   description?: string;
+  created_by: string;
   member_count: number;
   project_count?: number;
   is_active: boolean;
   created_at: string;
-  adhd_settings?: {
-    group_focus_sessions: boolean;
-    shared_energy_tracking: boolean;
-    group_dopamine_celebrations: boolean;
-    collaborative_task_chunking: boolean;
-    group_break_reminders: boolean;
-    accountability_features: boolean;
-  };
+  updated_at?: string;
+  // ADHD-specific settings as individual fields
+  group_focus_sessions: boolean;
+  shared_energy_tracking: boolean;
+  group_dopamine_celebrations: boolean;
+  collaborative_task_chunking: boolean;
+  group_break_reminders: boolean;
+  accountability_features: boolean;
 }
 
 export interface User {
-  id: number;
+  id: string;
   email: string;
   full_name?: string;
   profile_picture_url?: string;
@@ -168,13 +169,13 @@ export interface User {
   created_at: string;
 }
 
-export interface GroupInvitation {
-  id: number;
+export interface SharedGroupInvitation {
+  id: string;
   token: string;
-  group_id: number;
+  group_id: string;
   invited_email: string;
-  invited_user_id?: number;
-  invited_by: number;
+  invited_user_id?: string;
+  invited_by: string;
   role: string;
   status: 'pending' | 'accepted' | 'declined' | 'expired';
   message?: string;
@@ -186,11 +187,16 @@ export interface GroupInvitation {
   inviter_name?: string;
 }
 
-export interface GroupInvitationList {
-  invitations: GroupInvitation[];
+export interface SharedGroupInvitationList {
+  invitations: SharedGroupInvitation[];
   total: number;
   pending_count: number;
 }
+
+// Backward compatibility type aliases
+export type Group = SharedGroup;
+export type GroupInvitation = SharedGroupInvitation;
+export type GroupInvitationList = SharedGroupInvitationList;
 
 // API functions
 export const api = {
@@ -222,7 +228,7 @@ export const api = {
     return response.data;
   },
 
-  completeTask: async (taskId: number) => {
+  completeTask: async (taskId: string) => {
     const response = await apiClient.put(`/api/tasks/${taskId}/complete`);
     return response.data;
   },
@@ -241,17 +247,17 @@ export const api = {
     return response.data;
   },
 
-  getProject: async (projectId: number) => {
+  getProject: async (projectId: string) => {
     const response = await apiClient.get(`/api/projects/${projectId}`);
     return response.data;
   },
 
-  updateProject: async (projectId: number, project: Partial<Project>) => {
+  updateProject: async (projectId: string, project: Partial<Project>) => {
     const response = await apiClient.put(`/api/projects/${projectId}`, project);
     return response.data;
   },
 
-  inviteToProject: async (projectId: number, invitation: {
+  inviteToProject: async (projectId: string, invitation: {
     user_email: string;
     role?: string;
     message?: string;
@@ -263,41 +269,41 @@ export const api = {
     return response.data;
   },
 
-  // Groups
-  getGroups: async () => {
-    const response = await apiClient.get('/api/groups');
+  // Shared Groups
+  getSharedGroups: async () => {
+    const response = await apiClient.get('/api/shared-groups');
     return response.data;
   },
 
-  createGroup: async (group: Partial<Group>) => {
-    const response = await apiClient.post('/api/groups', group);
+  createSharedGroup: async (group: Partial<SharedGroup>) => {
+    const response = await apiClient.post('/api/shared-groups', group);
     return response.data;
   },
 
-  getGroup: async (groupId: number) => {
-    const response = await apiClient.get(`/api/groups/${groupId}`);
+  getSharedGroup: async (groupId: string) => {
+    const response = await apiClient.get(`/api/shared-groups/${groupId}`);
     return response.data;
   },
 
-  updateGroup: async (groupId: number, group: Partial<Group>) => {
-    const response = await apiClient.put(`/api/groups/${groupId}`, group);
+  updateSharedGroup: async (groupId: string, group: Partial<SharedGroup>) => {
+    const response = await apiClient.put(`/api/shared-groups/${groupId}`, group);
     return response.data;
   },
 
-  deleteGroup: async (groupId: number) => {
-    const response = await apiClient.delete(`/api/groups/${groupId}`);
+  deleteSharedGroup: async (groupId: string) => {
+    const response = await apiClient.delete(`/api/shared-groups/${groupId}`);
     return response.data;
   },
 
-  // Invitations
-  createInvitation: async (invitation: {
-    group_id: number;
+  // Shared Group Invitations
+  createSharedGroupInvitation: async (invitation: {
+    group_id: string;
     invited_email: string;
     message?: string;
     role?: string;
   }) => {
     const { group_id, ...payload } = invitation;
-    const response = await apiClient.post(`/api/invitations/groups/${group_id}/invite`, {
+    const response = await apiClient.post(`/api/invitations/shared-groups/${group_id}/invite`, {
       invited_email: payload.invited_email,
       message: payload.message,
       role: payload.role || 'member'
@@ -337,4 +343,53 @@ export const api = {
     const response = await apiClient.get('/api/analytics/dashboard');
     return response.data;
   },
+
+  // Backward compatibility functions
+  getGroups: async () => {
+    const response = await apiClient.get('/api/shared-groups');
+    return response.data;
+  },
+
+  createGroup: async (group: Partial<SharedGroup>) => {
+    const response = await apiClient.post('/api/shared-groups', group);
+    return response.data;
+  },
+
+  getGroup: async (groupId: string) => {
+    const response = await apiClient.get(`/api/shared-groups/${groupId}`);
+    return response.data;
+  },
+
+  updateGroup: async (groupId: string, group: Partial<SharedGroup>) => {
+    const response = await apiClient.put(`/api/shared-groups/${groupId}`, group);
+    return response.data;
+  },
+
+  deleteGroup: async (groupId: string) => {
+    const response = await apiClient.delete(`/api/shared-groups/${groupId}`);
+    return response.data;
+  },
+
+  createInvitation: async (invitation: {
+    group_id: string;
+    invited_email: string;
+    message?: string;
+    role?: string;
+  }) => {
+    const { group_id, ...payload } = invitation;
+    const response = await apiClient.post(`/api/invitations/shared-groups/${group_id}/invite`, {
+      invited_email: payload.invited_email,
+      message: payload.message,
+      role: payload.role || 'member'
+    });
+    return response.data;
+  },
 };
+
+// Remove the old assignments that don't work with TypeScript
+// api.getGroups = api.getSharedGroups;
+// api.createGroup = api.createSharedGroup;
+// api.getGroup = api.getSharedGroup;
+// api.updateGroup = api.updateSharedGroup;
+// api.deleteGroup = api.deleteSharedGroup;
+// api.createInvitation = api.createSharedGroupInvitation;

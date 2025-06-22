@@ -23,7 +23,7 @@ export default function NewProjectPage() {
     status: 'planning' as const,
     is_public_joinable: false,
     max_collaborators: 10,
-    group_id: '',
+    shared_group_id: '',
     start_date: '',
     due_date: ''
   });
@@ -40,11 +40,11 @@ export default function NewProjectPage() {
         due_date: formData.due_date || undefined
       };
 
-      // Only include group_id if a group is actually selected
-      if (formData.group_id && formData.group_id !== '') {
-        projectData.group_id = parseInt(formData.group_id);
+      // Only include shared_group_id if a group is actually selected
+      if (formData.shared_group_id && formData.shared_group_id !== '') {
+        projectData.shared_group_id = formData.shared_group_id;
       } else {
-        delete projectData.group_id;
+        delete projectData.shared_group_id;
       }
 
       await api.createProject(projectData);
@@ -178,14 +178,14 @@ export default function NewProjectPage() {
 
           {/* Group Selection */}
           <div className="mt-4">
-            <label htmlFor="group_id" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="shared_group_id" className="block text-sm font-medium text-gray-700 mb-1">
               <Users className="inline h-4 w-4 mr-1" />
-              Associate with Group (Optional)
+              Associate with Shared Group (Optional)
             </label>
             <select
-              id="group_id"
-              name="group_id"
-              value={formData.group_id}
+              id="shared_group_id"
+              name="shared_group_id"
+              value={formData.shared_group_id}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adhd-primary-500"
             >

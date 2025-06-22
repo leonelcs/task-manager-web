@@ -115,36 +115,34 @@ function GroupCard({ group }: { group: Group }) {
       </div>
 
       {/* ADHD Features */}
-      {group.adhd_settings && (
-        <div className="border-t pt-3">
-          <div className="flex items-center gap-2 mb-2">
-            <Settings className="h-4 w-4 text-adhd-primary-500" />
-            <span className="text-sm font-medium text-adhd-primary-700">ADHD Features:</span>
-          </div>
-          <div className="flex flex-wrap gap-1">
-            {group.adhd_settings.group_focus_sessions && (
-              <span className="text-xs bg-adhd-primary-100 text-adhd-primary-700 px-2 py-1 rounded">
-                Focus Sessions
-              </span>
-            )}
-            {group.adhd_settings.shared_energy_tracking && (
-              <span className="text-xs bg-adhd-secondary-100 text-adhd-secondary-700 px-2 py-1 rounded">
-                Energy Tracking
-              </span>
-            )}
-            {group.adhd_settings.group_dopamine_celebrations && (
-              <span className="text-xs bg-pebbles-100 text-pebbles-700 px-2 py-1 rounded">
-                Celebrations
-              </span>
-            )}
-            {group.adhd_settings.accountability_features && (
-              <span className="text-xs bg-rock-100 text-rock-700 px-2 py-1 rounded">
-                Accountability
-              </span>
-            )}
-          </div>
+      <div className="border-t pt-3">
+        <div className="flex items-center gap-2 mb-2">
+          <Settings className="h-4 w-4 text-adhd-primary-500" />
+          <span className="text-sm font-medium text-adhd-primary-700">ADHD Features:</span>
         </div>
-      )}
+        <div className="flex flex-wrap gap-1">
+          {group.group_focus_sessions && (
+            <span className="text-xs bg-adhd-primary-100 text-adhd-primary-700 px-2 py-1 rounded">
+              Focus Sessions
+            </span>
+          )}
+          {group.shared_energy_tracking && (
+            <span className="text-xs bg-adhd-secondary-100 text-adhd-secondary-700 px-2 py-1 rounded">
+              Energy Tracking
+            </span>
+          )}
+          {group.group_dopamine_celebrations && (
+            <span className="text-xs bg-pebbles-100 text-pebbles-700 px-2 py-1 rounded">
+              Celebrations
+            </span>
+          )}
+          {group.accountability_features && (
+            <span className="text-xs bg-rock-100 text-rock-700 px-2 py-1 rounded">
+              Accountability
+            </span>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
