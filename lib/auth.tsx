@@ -1,11 +1,11 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import Cookies from 'js-cookie';
 import { apiClient } from '@/lib/api';
 
 interface User {
-  id: number;
+  id: string;
   email: string;
   full_name?: string;
   profile_picture_url?: string;
@@ -27,47 +27,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const isAuthenticated = !!user;
+
+  // Check for existing token on mount
   useEffect(() => {
-    const token = Cookies.get('token');
+    const token = Cookies.get('auth_token');
     if (token) {
+      // Set the token in the API client immediately
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       // Verify token and get user data
-      apiClient.get('/api/auth/me')
-        .then(response => {
-          setUser(response.data);
-        })
-        .catch(() => {
-          // Token is invalid, remove it
-          Cookies.remove('token');
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+      fetchUserProfile(token);
     } else {
       setIsLoading(false);
     }
   }, []);
 
+  const fetchUserProfile = async (token: string) => {
+    try {
+      // Fetch user profile
+      const response = await apiClient.get('/api/auth/me');
+      setUser(response.data);
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      // Token might be invalid, remove it
+      Cookies.remove('auth_token');
+      delete apiClient.defaults.headers.common['Authorization'];
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const login = (token: string, userData: User) => {
-    Cookies.set('token', token, { expires: 7 }); // 7 days
+    // Store token in cookie
+    Cookies.set('auth_token', token, { expires: 7 }); // 7 days
+    
+    // Set token in API client
+    apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    
+    // Set user data
     setUser(userData);
   };
 
   const logout = () => {
-    Cookies.remove('token');
+    // Remove token from cookie
+    Cookies.remove('auth_token');
+    
+    // Remove token from API client
+    delete apiClient.defaults.headers.common['Authorization'];
+    
+    // Clear user data
     setUser(null);
   };
 
   const startGoogleLogin = async (): Promise<string> => {
     try {
-      const response = await apiClient.get('/api/auth/google/login');
-      return response.data.auth_url;
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google/login`);
+      const data = await response.json();
+      return data.auth_url;
     } catch (error) {
       console.error('Failed to start Google login:', error);
-      throw error;
+      throw new Error('Failed to initiate Google login');
     }
   };
-
-  const isAuthenticated = !!user;
 
   const value = {
     user,

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/lib/auth.tsx';
+import { useAuth } from '@/lib/auth';
 import { Brain, CheckCircle, XCircle } from 'lucide-react';
 
 export default function OAuthCallbackPage() {

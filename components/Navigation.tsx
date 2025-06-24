@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, CheckSquare, FolderOpen, Users, BarChart3, Brain, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/lib/auth.tsx';
+import { useAuth } from '@/lib/auth';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },

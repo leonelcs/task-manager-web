@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api, Task, Project } from '@/lib/api';
 import TaskCard from '@/components/TaskCard';
 import ProjectTag from '@/components/ProjectTag';
-import InvitationBanner from '@/components/InvitationBanner';
+import PendingInvitationsNotification from '@/components/PendingInvitationsNotification';
 import { getProjectColor } from '@/lib/utils';
 import { Plus, Brain, Target, Zap } from 'lucide-react';
 import Link from 'next/link';
@@ -33,7 +33,7 @@ export default function Dashboard() {
     sand: tasks.filter((task: Task) => task.impact_size === 'sand')
   };
 
-  const handleTaskComplete = async (taskId: number) => {
+  const handleTaskComplete = async (taskId: string) => {
     try {
       await api.completeTask(taskId);
       // Refetch tasks after completion
@@ -54,8 +54,6 @@ export default function Dashboard() {
   return (
     <ProtectedRoute>
       <div className="space-y-8">
-      {/* Invitation Banner */}
-      <InvitationBanner />
 
       {/* Welcome Section */}
       <div className="card bg-gradient-to-r from-adhd-primary-500 to-adhd-primary-600 text-white">
@@ -71,6 +69,9 @@ export default function Dashboard() {
           <Brain className="h-16 w-16 text-adhd-primary-200" />
         </div>
       </div>
+
+      {/* Pending Invitations Notification */}
+      <PendingInvitationsNotification />
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

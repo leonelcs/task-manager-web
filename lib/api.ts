@@ -303,7 +303,7 @@ export const api = {
     role?: string;
   }) => {
     const { group_id, ...payload } = invitation;
-    const response = await apiClient.post(`/api/invitations/shared-groups/${group_id}/invite`, {
+    const response = await apiClient.post(`/api/invitations/groups/${group_id}/invite`, {
       invited_email: payload.invited_email,
       message: payload.message,
       role: payload.role || 'member'
@@ -328,7 +328,28 @@ export const api = {
   },
 
   getPendingInvitations: async () => {
-    const response = await apiClient.get('/api/invitations/users/me/invitations');
+    const response = await apiClient.get('/api/invitations/me');
+    return response.data;
+  },
+
+  // Group invitation management (for group owners)
+  getGroupInvitations: async (groupId: string) => {
+    const response = await apiClient.get(`/api/invitations/groups/${groupId}`);
+    return response.data;
+  },
+
+  resendGroupInvitation: async (groupId: string, invitationId: string) => {
+    const response = await apiClient.post(`/api/invitations/groups/${groupId}/${invitationId}/resend`);
+    return response.data;
+  },
+
+  cancelGroupInvitation: async (groupId: string, invitationId: string) => {
+    const response = await apiClient.delete(`/api/invitations/groups/${groupId}/${invitationId}`);
+    return response.data;
+  },
+
+  clearPendingGroupInvitations: async (groupId: string) => {
+    const response = await apiClient.delete(`/api/invitations/groups/${groupId}/clear-pending`);
     return response.data;
   },
 
@@ -377,7 +398,7 @@ export const api = {
     role?: string;
   }) => {
     const { group_id, ...payload } = invitation;
-    const response = await apiClient.post(`/api/invitations/shared-groups/${group_id}/invite`, {
+    const response = await apiClient.post(`/api/invitations/groups/${group_id}/invite`, {
       invited_email: payload.invited_email,
       message: payload.message,
       role: payload.role || 'member'

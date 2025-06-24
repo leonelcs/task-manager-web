@@ -41,7 +41,7 @@ export default function TasksPage() {
     queryFn: () => api.getTasks(filters)
   });
 
-  const handleTaskComplete = async (taskId: number) => {
+  const handleTaskComplete = async (taskId: string) => {
     try {
       await api.completeTask(taskId);
       // Refetch tasks after completion

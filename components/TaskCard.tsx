@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
   task: Task;
-  onComplete?: (taskId: number) => void;
+  onComplete?: (taskId: string) => void;
   projectColor?: string;
 }
 
