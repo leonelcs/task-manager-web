@@ -45,12 +45,29 @@ export default function TaskCard({ task, onComplete, projectColor }: TaskCardPro
       'card border-l-4 hover:shadow-md transition-shadow',
       impact.color
     )}>
-      {/* Project context bar */}
-      {projectColor && (
-        <div 
-          className="w-full h-1 rounded-full mb-3"
-          style={{ backgroundColor: projectColor }}
-        />
+      {/* Project context bar and info */}
+      {task.project_name && (
+        <div className="mb-3">
+          <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+            <span className="font-medium">Project:</span>
+            <span className="bg-gray-100 px-2 py-1 rounded-full">{task.project_name}</span>
+            {task.project_type && task.project_type !== 'personal' && (
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                task.project_type === 'shared' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'bg-green-100 text-green-700'
+              }`}>
+                {task.project_type.toUpperCase()}
+              </span>
+            )}
+          </div>
+          {projectColor && (
+            <div 
+              className="w-full h-1 rounded-full"
+              style={{ backgroundColor: projectColor }}
+            />
+          )}
+        </div>
       )}
       
       <div className="flex items-start justify-between mb-3">

@@ -95,6 +95,8 @@ export interface Task {
   dopamine_reward?: string;
   energy_level_required?: string;
   project_id?: string;
+  project_name?: string;
+  project_type?: 'personal' | 'shared' | 'public';
 }
 
 export interface Project {
@@ -224,7 +226,7 @@ export const api = {
   },
 
   createTask: async (task: Partial<Task>) => {
-    const response = await apiClient.post('/api/tasks', task); // Added trailing slash
+    const response = await apiClient.post('/api/tasks/', task); // Fixed: Added trailing slash
     return response.data;
   },
 
@@ -235,15 +237,34 @@ export const api = {
 
   // Projects
   getProjects: async (params?: {
-    project_type?: string;
+    project_type?: string | string[];
     status?: string;
   }) => {
-    const response = await apiClient.get('/api/projects', { params });
+    // Handle project_type as array for multiple types
+    const searchParams = new URLSearchParams();
+    
+    if (params) {
+      if (params.project_type) {
+        if (Array.isArray(params.project_type)) {
+          // Send multiple project_type parameters for FastAPI List[ProjectType]
+          params.project_type.forEach(type => {
+            searchParams.append('project_type', type);
+          });
+        } else {
+          searchParams.append('project_type', params.project_type);
+        }
+      }
+      if (params.status) {
+        searchParams.append('status', params.status);
+      }
+    }
+    
+    const response = await apiClient.get(`/api/projects?${searchParams.toString()}`);
     return response.data;
   },
 
   createProject: async (project: Partial<Project>) => {
-    const response = await apiClient.post('/api/projects', project);
+    const response = await apiClient.post('/api/projects/', project);
     return response.data;
   },
 
@@ -372,7 +393,7 @@ export const api = {
   },
 
   createGroup: async (group: Partial<SharedGroup>) => {
-    const response = await apiClient.post('/api/shared-groups', group);
+    const response = await apiClient.post('/api/shared-groups/', group);
     return response.data;
   },
 

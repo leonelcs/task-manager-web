@@ -18,7 +18,7 @@ export default function Dashboard() {
 
   const { data: projects = [], isLoading: projectsLoading } = useQuery({
     queryKey: ['projects'],
-    queryFn: () => api.getProjects()
+    queryFn: () => api.getProjects({ project_type: ['personal', 'shared', 'public'] })
   });
 
   const { data: analytics } = useQuery({

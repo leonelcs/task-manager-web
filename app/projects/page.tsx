@@ -10,7 +10,7 @@ import Link from 'next/link';
 export default function ProjectsPage() {
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['projects'],
-    queryFn: () => api.getProjects()
+    queryFn: () => api.getProjects({ project_type: ['personal', 'shared', 'public'] })
   });
 
   const projectsByType = {
