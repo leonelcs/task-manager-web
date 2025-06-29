@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
+import { getApiUrl, API_CONFIG } from '@/lib/config';
 import { Brain, CheckCircle, XCircle } from 'lucide-react';
 
 export default function OAuthCallbackPage() {
@@ -30,7 +31,7 @@ export default function OAuthCallbackPage() {
       if (token && user_id) {
         try {
           // Get user data using the token
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
+          const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.AUTH.ME), {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -69,7 +70,7 @@ export default function OAuthCallbackPage() {
       try {
         // Send the code to our backend to complete the OAuth flow
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google/callback?code=${code}&state=${state || ''}`
+          `${getApiUrl(API_CONFIG.ENDPOINTS.AUTH.GOOGLE_CALLBACK)}?code=${code}&state=${state || ''}`
         );
 
         if (!response.ok) {

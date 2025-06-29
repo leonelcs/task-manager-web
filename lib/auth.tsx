@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import Cookies from 'js-cookie';
 import { apiClient } from '@/lib/api';
+import { getApiUrl, API_CONFIG } from '@/lib/config';
 
 interface User {
   id: string;
@@ -81,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const startGoogleLogin = async (): Promise<string> => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google/login`);
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.AUTH.GOOGLE_LOGIN));
       const data = await response.json();
       return data.auth_url;
     } catch (error) {
