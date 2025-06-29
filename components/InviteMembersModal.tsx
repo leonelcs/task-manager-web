@@ -64,6 +64,8 @@ export default function InviteMembersModal({
       return false;
     }
     
+    // Note: Additional whitelist validation happens on the backend during alpha release
+    
     return true;
   };
 
