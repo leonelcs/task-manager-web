@@ -1,0 +1,13 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'build'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_API_URL=https://adhd-task-manager-api-371157983914.europe-west4.run.app'
+      - '--build-arg'
+      - 'NEXTAUTH_URL=https://adhd-task-manager-web-371157983914.europe-west4.run.app'
+      - '-t'
+      - 'europe-west4-docker.pkg.dev/project-leonel/adhd-task-manager/adhd-task-manager-web:latest'
+      - '.'
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'europe-west4-docker.pkg.dev/project-leonel/adhd-task-manager/adhd-task-manager-web:latest']

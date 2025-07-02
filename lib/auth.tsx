@@ -82,9 +82,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const startGoogleLogin = async (): Promise<string> => {
     try {
-      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.AUTH.GOOGLE_LOGIN));
-      const data = await response.json();
-      return data.auth_url;
+      const response = await apiClient.get(API_CONFIG.ENDPOINTS.AUTH.GOOGLE_LOGIN);
+      return response.data.auth_url;
     } catch (error) {
       console.error('Failed to start Google login:', error);
       throw new Error('Failed to initiate Google login');

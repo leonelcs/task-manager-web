@@ -4,6 +4,7 @@ import './globals.css'
 import { QueryProvider } from '@/components/QueryProvider'
 import { AuthProvider } from '@/lib/auth'
 import LayoutWrapper from '@/components/LayoutWrapper'
+import '@/lib/debug-interceptors' // Global request debugging
 
 const inter = Inter({ subsets: ['latin'] })
 

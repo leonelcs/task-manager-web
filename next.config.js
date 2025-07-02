@@ -3,14 +3,7 @@ const nextConfig = {
   // Enable standalone output for Docker deployment
   output: 'standalone',
   
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/:path*`,
-      },
-    ]
-  },
+  // Removed rewrites - using absolute URLs with axios instead
   
   // Optimize for production
   swcMinify: true,
@@ -33,6 +26,10 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: 'upgrade-insecure-requests',
           },
         ],
       },

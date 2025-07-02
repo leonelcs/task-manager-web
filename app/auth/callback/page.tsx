@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { getApiUrl, API_CONFIG } from '@/lib/config';
+import { apiClient } from '@/lib/api';
 import { Brain, CheckCircle, XCircle } from 'lucide-react';
 
 export default function OAuthCallbackPage() {
@@ -30,18 +31,14 @@ export default function OAuthCallbackPage() {
       // If we have a token directly from redirect, use it
       if (token && user_id) {
         try {
-          // Get user data using the token
-          const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.AUTH.ME), {
+          // Get user data using the token - use apiClient for HTTPS enforcement
+          const response = await apiClient.get(API_CONFIG.ENDPOINTS.AUTH.ME, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
           });
 
-          if (!response.ok) {
-            throw new Error('Failed to get user data');
-          }
-
-          const userData = await response.json();
+          const userData = response.data;
           
           // Login the user with the received token and user data
           login(token, userData);
@@ -68,17 +65,15 @@ export default function OAuthCallbackPage() {
       }
 
       try {
-        // Send the code to our backend to complete the OAuth flow
-        const response = await fetch(
-          `${getApiUrl(API_CONFIG.ENDPOINTS.AUTH.GOOGLE_CALLBACK)}?code=${code}&state=${state || ''}`
-        );
+        // Send the code to our backend to complete the OAuth flow - use apiClient for HTTPS enforcement
+        const response = await apiClient.get(API_CONFIG.ENDPOINTS.AUTH.GOOGLE_CALLBACK, {
+          params: {
+            code: code,
+            state: state || ''
+          }
+        });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || 'Authentication failed');
-        }
-
-        const data = await response.json();
+        const data = response.data;
         
         // Login the user with the received token and user data
         login(data.access_token, data.user);

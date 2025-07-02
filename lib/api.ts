@@ -13,31 +13,59 @@ export const apiClient = axios.create({
 // Enhanced logging for debugging
 const isDevelopment = process.env.NODE_ENV === 'development';
 
+// Debug log the base URL configuration
+console.log('🔧 API Client Configuration:', {
+  baseURL: API_CONFIG.BASE_URL,
+  NODE_ENV: process.env.NODE_ENV,
+  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  timestamp: new Date().toISOString()
+});
+
 // Add request interceptor to always include auth token and log requests
 apiClient.interceptors.request.use(
   (config) => {
-    const token = Cookies.get('token');
+    const token = Cookies.get('auth_token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
     
-    // Debug logging
-    if (isDevelopment) {
-      console.log('🚀 API Request:', {
-        method: config.method?.toUpperCase(),
-        url: `${config.baseURL}${config.url}`,
-        headers: config.headers,
-        data: config.data,
-        timeout: config.timeout
+    // Force HTTPS if HTTP is detected in any URL
+    if (config.url && config.url.startsWith('http://')) {
+      console.warn('⚠️ HTTP URL detected and converted to HTTPS:', config.url);
+      config.url = config.url.replace('http://', 'https://');
+    }
+    if (config.baseURL && config.baseURL.startsWith('http://')) {
+      console.warn('⚠️ HTTP baseURL detected and converted to HTTPS:', config.baseURL);
+      config.baseURL = config.baseURL.replace('http://', 'https://');
+    }
+    
+    // Always log the full URL being called
+    const fullURL = config.baseURL && config.url ? `${config.baseURL}${config.url}` : (config.url || 'unknown');
+    console.log('🚀 API Request:', {
+      method: config.method?.toUpperCase(),
+      fullURL: fullURL,
+      baseURL: config.baseURL,
+      url: config.url,
+      protocol: fullURL.startsWith('https://') ? 'HTTPS' : (fullURL.startsWith('http://') ? 'HTTP' : 'UNKNOWN'),
+      headers: config.headers,
+      data: config.data,
+      timeout: config.timeout,
+      hasAuthToken: !!config.headers['Authorization']
+    });
+    
+    // Additional check for mixed content
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && fullURL.startsWith('http://')) {
+      console.error('🚨 MIXED CONTENT DETECTED:', {
+        pageProtocol: window.location.protocol,
+        requestURL: fullURL,
+        stack: new Error().stack
       });
     }
     
     return config;
   },
   (error) => {
-    if (isDevelopment) {
-      console.error('❌ API Request Error:', error);
-    }
+    console.error('❌ API Request Error:', error);
     return Promise.reject(error);
   }
 );
@@ -71,7 +99,7 @@ apiClient.interceptors.response.use(
     
     if (error.response?.status === 401) {
       // Remove invalid token
-      Cookies.remove('token');
+      Cookies.remove('auth_token');
       // Redirect to login if not already there
       if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
         window.location.href = '/login';
@@ -241,26 +269,20 @@ export const api = {
     project_type?: string | string[];
     status?: string;
   }) => {
-    // Handle project_type as array for multiple types
-    const searchParams = new URLSearchParams();
+    // Use Axios params instead of manual URL construction to ensure baseURL is used
+    const axiosParams: Record<string, string | string[]> = {};
     
     if (params) {
       if (params.project_type) {
-        if (Array.isArray(params.project_type)) {
-          // Send multiple project_type parameters for FastAPI List[ProjectType]
-          params.project_type.forEach(type => {
-            searchParams.append('project_type', type);
-          });
-        } else {
-          searchParams.append('project_type', params.project_type);
-        }
+        // Axios will properly serialize arrays as multiple parameters
+        axiosParams.project_type = params.project_type;
       }
       if (params.status) {
-        searchParams.append('status', params.status);
+        axiosParams.status = params.status;
       }
     }
     
-    const response = await apiClient.get(`/api/projects?${searchParams.toString()}`);
+    const response = await apiClient.get('/api/projects/', { params: axiosParams });
     return response.data;
   },
 
@@ -293,12 +315,12 @@ export const api = {
 
   // Shared Groups
   getSharedGroups: async () => {
-    const response = await apiClient.get('/api/shared-groups');
+    const response = await apiClient.get('/api/shared-groups/');
     return response.data;
   },
 
   createSharedGroup: async (group: Partial<SharedGroup>) => {
-    const response = await apiClient.post('/api/shared-groups', group);
+    const response = await apiClient.post('/api/shared-groups/', group);
     return response.data;
   },
 
@@ -350,13 +372,13 @@ export const api = {
   },
 
   getPendingInvitations: async () => {
-    const response = await apiClient.get('/api/invitations/me');
+    const response = await apiClient.get('/api/invitations/me/');
     return response.data;
   },
 
   // Group invitation management (for group owners)
   getGroupInvitations: async (groupId: string) => {
-    const response = await apiClient.get(`/api/invitations/groups/${groupId}`);
+    const response = await apiClient.get(`/api/invitations/groups/${groupId}/`);
     return response.data;
   },
 
@@ -377,19 +399,19 @@ export const api = {
 
   // Users
   getUserProfile: async () => {
-    const response = await apiClient.get('/api/users');
+    const response = await apiClient.get('/api/users/');
     return response.data;
   },
 
   // Analytics
   getAnalyticsDashboard: async () => {
-    const response = await apiClient.get('/api/analytics/dashboard');
+    const response = await apiClient.get('/api/analytics/dashboard/');
     return response.data;
   },
 
   // Backward compatibility functions
   getGroups: async () => {
-    const response = await apiClient.get('/api/shared-groups');
+    const response = await apiClient.get('/api/shared-groups/');
     return response.data;
   },
 
