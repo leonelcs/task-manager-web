@@ -7,6 +7,7 @@ import { ArrowLeft, Edit, Users, Calendar, Settings, Target, Zap, Shield, Folder
 import Link from 'next/link';
 import { useState } from 'react';
 import { getProjectColor } from '@/lib/utils';
+import { formatDateEuropean } from '@/lib/dateUtils';
 import InviteProjectMembersModal from '@/components/InviteProjectMembersModal';
 
 export default function ProjectDetailPage() {
@@ -185,7 +186,7 @@ export default function ProjectDetailPage() {
             <div>
               <label className="text-sm font-medium text-gray-700">Created</label>
               <p className="mt-1 text-sm text-gray-900">
-                {new Date(project.created_at).toLocaleDateString()}
+                {formatDateEuropean(project.created_at)}
               </p>
             </div>
 
@@ -193,7 +194,7 @@ export default function ProjectDetailPage() {
               <div>
                 <label className="text-sm font-medium text-gray-700">Start Date</label>
                 <p className="mt-1 text-sm text-gray-900">
-                  {new Date(project.start_date).toLocaleDateString()}
+                  {formatDateEuropean(project.start_date)}
                 </p>
               </div>
             )}
@@ -202,7 +203,7 @@ export default function ProjectDetailPage() {
               <div>
                 <label className="text-sm font-medium text-gray-700">Due Date</label>
                 <p className="mt-1 text-sm text-gray-900">
-                  {new Date(project.due_date).toLocaleDateString()}
+                  {formatDateEuropean(project.due_date)}
                 </p>
               </div>
             )}
@@ -211,7 +212,7 @@ export default function ProjectDetailPage() {
               <div>
                 <label className="text-sm font-medium text-gray-700">Completed</label>
                 <p className="mt-1 text-sm text-gray-900">
-                  {new Date(project.completed_at).toLocaleDateString()}
+                  {formatDateEuropean(project.completed_at)}
                 </p>
               </div>
             )}
@@ -220,7 +221,7 @@ export default function ProjectDetailPage() {
               <div>
                 <label className="text-sm font-medium text-gray-700">Last Updated</label>
                 <p className="mt-1 text-sm text-gray-900">
-                  {new Date(project.updated_at).toLocaleDateString()}
+                  {formatDateEuropean(project.updated_at)}
                 </p>
               </div>
             )}

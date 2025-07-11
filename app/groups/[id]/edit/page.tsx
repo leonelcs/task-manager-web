@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { formatDateEuropean } from '@/lib/dateUtils';
 import { ArrowLeft, Save, Trash2, Users, Settings, Target, Zap, Heart, Shield, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -68,7 +69,7 @@ export default function EditGroupPage() {
 
     try {
       await api.deleteGroup(groupId);
-      router.push('/groups');
+      router.push('/groups/');
     } catch (error) {
       console.error('Failed to delete group:', error);
     } finally {
@@ -140,7 +141,7 @@ export default function EditGroupPage() {
           <div>
             <h3 className="font-semibold text-adhd-primary-900">{group.member_count} Members</h3>
             <p className="text-sm text-adhd-primary-700">
-              Created on {new Date(group.created_at).toLocaleDateString()}
+              Created on {formatDateEuropean(group.created_at)}
             </p>
           </div>
         </div>

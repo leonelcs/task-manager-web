@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api, Project } from '@/lib/api';
 import ProjectTag from '@/components/ProjectTag';
 import { getProjectColor } from '@/lib/utils';
+import { formatDateEuropean } from '@/lib/dateUtils';
 import { Plus, FolderOpen, Users, Calendar, Target } from 'lucide-react';
 import Link from 'next/link';
 
@@ -170,7 +171,7 @@ function ProjectCard({ project, color }: { project: Project; color: string }) {
         {project.due_date && (
           <div className="flex items-center gap-1 mt-2 text-sm text-gray-500">
             <Calendar className="h-4 w-4" />
-            <span>Due {new Date(project.due_date).toLocaleDateString()}</span>
+            <span>Due {formatDateEuropean(project.due_date)}</span>
           </div>
         )}
       </div>

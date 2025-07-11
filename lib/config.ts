@@ -2,26 +2,38 @@
 // FORCE HTTPS - Never use HTTP in production
 const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://adhd-task-manager-api-371157983914.europe-west4.run.app';
 
-// Aggressively force HTTPS - replace any HTTP with HTTPS
-const secureBaseUrl = rawBaseUrl.replace(/^http:\/\//, 'https://');
+// Check if we're in localhost development environment
+const isLocalhost = typeof window !== 'undefined' && (
+  window.location.hostname === 'localhost' || 
+  window.location.hostname === '127.0.0.1' ||
+  window.location.hostname.includes('localhost')
+);
 
-// Additional safety check - if no protocol, ensure HTTPS
-const finalBaseUrl = secureBaseUrl.startsWith('http') ? secureBaseUrl : `https://${secureBaseUrl}`;
+// For localhost, preserve HTTP if that's what's configured
+let finalBaseUrl;
+if (isLocalhost && rawBaseUrl.startsWith('http://')) {
+  finalBaseUrl = rawBaseUrl; // Keep HTTP for localhost
+} else {
+  // Aggressively force HTTPS for production - replace any HTTP with HTTPS
+  const secureBaseUrl = rawBaseUrl.replace(/^http:\/\//, 'https://');
+  // Additional safety check - if no protocol, ensure HTTPS
+  finalBaseUrl = secureBaseUrl.startsWith('http') ? secureBaseUrl : `https://${secureBaseUrl}`;
+}
 
 // Debug logging for production
 if (typeof window !== 'undefined') {
   console.log('🔧 API Configuration Debug:', {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     rawBaseUrl: rawBaseUrl,
-    secureBaseUrl: secureBaseUrl,
     finalBaseUrl: finalBaseUrl,
+    isLocalhost: isLocalhost,
     NODE_ENV: process.env.NODE_ENV,
     timestamp: new Date().toISOString(),
-    forcedHTTPS: rawBaseUrl !== finalBaseUrl
+    preservedLocalhost: isLocalhost && rawBaseUrl.startsWith('http://')
   });
   
-  // Alert if we had to force HTTPS conversion
-  if (rawBaseUrl !== finalBaseUrl) {
+  // Alert if we had to force HTTPS conversion (but not for localhost)
+  if (!isLocalhost && rawBaseUrl !== finalBaseUrl) {
     console.warn('⚠️ Forced HTTP to HTTPS conversion!', { 
       original: rawBaseUrl, 
       converted: finalBaseUrl 

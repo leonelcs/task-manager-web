@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, Task, Project } from '@/lib/api';
 import TaskCard from '@/components/TaskCard';
 import ProjectTag from '@/components/ProjectTag';
@@ -11,6 +11,8 @@ import Link from 'next/link';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function Dashboard() {
+  const queryClient = useQueryClient();
+  
   const { data: tasks = [], isLoading: tasksLoading } = useQuery({
     queryKey: ['tasks'],
     queryFn: () => api.getTasks({ status: 'todo' })
@@ -36,8 +38,8 @@ export default function Dashboard() {
   const handleTaskComplete = async (taskId: string) => {
     try {
       await api.completeTask(taskId);
-      // Refetch tasks after completion
-      // queryClient.invalidateQueries(['tasks']);
+      // Refetch tasks after completion to remove completed task from dashboard
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     } catch (error) {
       console.error('Failed to complete task:', error);
     }

@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { formatDateEuropean } from '@/lib/dateUtils';
 import { ArrowLeft, Edit, Users, Calendar, Settings, Target, Zap, Shield, Heart, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -108,7 +109,7 @@ export default function GroupDetailPage() {
             <div>
               <p className="text-sm text-pebbles-700">Created</p>
               <p className="text-sm font-semibold text-pebbles-900">
-                {new Date(group.created_at).toLocaleDateString()}
+                {formatDateEuropean(group.created_at)}
               </p>
             </div>
           </div>

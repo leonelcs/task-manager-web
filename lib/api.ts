@@ -29,12 +29,12 @@ apiClient.interceptors.request.use(
       config.headers['Authorization'] = `Bearer ${token}`;
     }
     
-    // Force HTTPS if HTTP is detected in any URL
-    if (config.url && config.url.startsWith('http://')) {
+    // Force HTTPS if HTTP is detected in any URL (except localhost)
+    if (config.url && config.url.startsWith('http://') && !config.url.includes('localhost')) {
       console.warn('⚠️ HTTP URL detected and converted to HTTPS:', config.url);
       config.url = config.url.replace('http://', 'https://');
     }
-    if (config.baseURL && config.baseURL.startsWith('http://')) {
+    if (config.baseURL && config.baseURL.startsWith('http://') && !config.baseURL.includes('localhost')) {
       console.warn('⚠️ HTTP baseURL detected and converted to HTTPS:', config.baseURL);
       config.baseURL = config.baseURL.replace('http://', 'https://');
     }
@@ -53,8 +53,8 @@ apiClient.interceptors.request.use(
       hasAuthToken: !!config.headers['Authorization']
     });
     
-    // Additional check for mixed content
-    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && fullURL.startsWith('http://')) {
+    // Additional check for mixed content (except localhost)
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && fullURL.startsWith('http://') && !fullURL.includes('localhost')) {
       console.error('🚨 MIXED CONTENT DETECTED:', {
         pageProtocol: window.location.protocol,
         requestURL: fullURL,
@@ -259,6 +259,16 @@ export const api = {
     return response.data;
   },
 
+  updateTask: async (taskId: string, task: Partial<Task>) => {
+    const response = await apiClient.put(`/api/tasks/${taskId}`, task);
+    return response.data;
+  },
+
+  deleteTask: async (taskId: string) => {
+    const response = await apiClient.delete(`/api/tasks/${taskId}`);
+    return response.data;
+  },
+
   completeTask: async (taskId: string) => {
     const response = await apiClient.put(`/api/tasks/${taskId}/complete`);
     return response.data;
@@ -288,6 +298,11 @@ export const api = {
 
   createProject: async (project: Partial<Project>) => {
     const response = await apiClient.post('/api/projects/', project);
+    return response.data;
+  },
+
+  deleteProject: async (projectId: string) => {
+    const response = await apiClient.delete(`/api/projects/${projectId}`);
     return response.data;
   },
 

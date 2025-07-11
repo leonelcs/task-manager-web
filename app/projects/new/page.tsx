@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api, Group } from '@/lib/api';
 import { ArrowLeft, Save, Settings, Target, Users, Calendar, FolderOpen } from 'lucide-react';
 import Link from 'next/link';
+import DatePicker from '@/components/DatePicker';
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -61,6 +62,13 @@ export default function NewProjectPage() {
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    }));
+  };
+
+  const handleDateChange = (field: string) => (isoDate: string | null) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: isoDate || ''
     }));
   };
 
@@ -247,33 +255,23 @@ export default function NewProjectPage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="start_date" className="block text-sm font-medium text-gray-700 mb-1">
-                Start Date
-              </label>
-              <input
-                type="date"
-                id="start_date"
-                name="start_date"
-                value={formData.start_date}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adhd-primary-500"
-              />
-            </div>
+            <DatePicker
+              id="start_date"
+              name="start_date"
+              label="Start Date"
+              value={formData.start_date}
+              onChange={handleDateChange('start_date')}
+              showPreview={true}
+            />
 
-            <div>
-              <label htmlFor="due_date" className="block text-sm font-medium text-gray-700 mb-1">
-                Due Date
-              </label>
-              <input
-                type="date"
-                id="due_date"
-                name="due_date"
-                value={formData.due_date}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adhd-primary-500"
-              />
-            </div>
+            <DatePicker
+              id="due_date"
+              name="due_date"
+              label="Due Date"
+              value={formData.due_date}
+              onChange={handleDateChange('due_date')}
+              showPreview={true}
+            />
           </div>
         </div>
 
