@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
+import { useProjects } from '@/hooks/useProjects';
 import { api, Group } from '@/lib/api';
 import { ArrowLeft, Save, Settings, Target, Users, Calendar, FolderOpen } from 'lucide-react';
 import Link from 'next/link';
@@ -11,6 +12,7 @@ import DatePicker from '@/components/DatePicker';
 export default function NewProjectPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { createProject } = useProjects();
 
   const { data: groups = [] } = useQuery({
     queryKey: ['groups'],
@@ -48,7 +50,7 @@ export default function NewProjectPage() {
         delete projectData.shared_group_id;
       }
 
-      await api.createProject(projectData);
+      await createProject(projectData);
       router.push('/projects');
     } catch (error) {
       console.error('Failed to create project:', error);

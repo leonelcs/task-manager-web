@@ -9,7 +9,14 @@ import TaskCard from '@/components/TaskCard'
 
 export default function TasksPage() {
   const [filter, setFilter] = useState<'all' | 'todo' | 'in_progress' | 'completed'>('all')
-  const { tasks, isLoading, error } = useTasks({})
+  const { 
+    tasks, 
+    isLoading, 
+    error, 
+    completeTask, 
+    updateTask, 
+    deleteTask 
+  } = useTasks({})
 
   if (isLoading) {
     return (
@@ -77,7 +84,13 @@ export default function TasksPage() {
       ) : (
         <div className="grid gap-4">
           {filteredTasks.map((task: Task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard 
+              key={task.id} 
+              task={task} 
+              onComplete={completeTask}
+              onUpdate={(taskId, updates) => updateTask({ taskId, updates })}
+              onDelete={deleteTask}
+            />
           ))}
         </div>
       )}

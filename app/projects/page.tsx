@@ -1,7 +1,7 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { api, Project } from '@/lib/api';
+import { useProjects } from '@/hooks/useProjects';
+import { Project } from '@/lib/api';
 import ProjectTag from '@/components/ProjectTag';
 import { getProjectColor } from '@/lib/utils';
 import { formatDateEuropean } from '@/lib/dateUtils';
@@ -9,9 +9,9 @@ import { Plus, FolderOpen, Users, Calendar, Target } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProjectsPage() {
-  const { data: projects = [], isLoading } = useQuery({
-    queryKey: ['projects'],
-    queryFn: () => api.getProjects({ project_type: ['personal', 'shared', 'public'] })
+  // Include all project types to show projects where user is owner OR member
+  const { projects, isLoading } = useProjects({ 
+    project_type: ['personal', 'shared', 'public'] 
   });
 
   const projectsByType = {

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import { useProjects } from '@/hooks/useProjects';
 import { api, Group } from '@/lib/api';
 import { ArrowLeft, Save, Settings, Target, Users, Calendar, FolderOpen, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -12,7 +13,7 @@ export default function EditProjectPage() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as string;
-  const queryClient = useQueryClient();
+  const { updateProject, deleteProject, isUpdating, isDeleting: isDeletingProject } = useProjects();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -58,17 +59,12 @@ export default function EditProjectPage() {
     }
   }, [project]);
 
-  const updateMutation = useMutation({
-    mutationFn: (data: any) => api.updateProject(projectId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['project', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+  const updateMutation = {
+    mutate: (data: any) => {
+      updateProject({ projectId, updates: data });
       router.push(`/projects/${projectId}`);
-    },
-    onError: (error) => {
-      console.error('Failed to update project:', error);
     }
-  });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,9 +111,7 @@ export default function EditProjectPage() {
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      // TODO: Implement delete functionality when backend supports it
-      console.log('Delete project:', projectId);
-      await api.deleteProject(projectId);
+      deleteProject(projectId);
       setShowDeleteModal(false);
       router.push('/projects/');
     } catch (error) {
@@ -350,11 +344,11 @@ export default function EditProjectPage() {
             </Link>
             <button 
               type="submit" 
-              disabled={isSubmitting || updateMutation.isPending}
+              disabled={isSubmitting || isUpdating}
               className="btn-primary disabled:opacity-50"
             >
               <Save className="h-4 w-4 mr-2" />
-              {isSubmitting || updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+              {isSubmitting || isUpdating ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </div>
