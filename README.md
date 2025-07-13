@@ -1,23 +1,55 @@
-# ADHD Task Manager Web
+# ADHD Task Manager - Frontend
 
-A Next.js frontend application for the ADHD Task Manager, designed specifically to help people with ADHD manage tasks across multiple projects with visual context and organization.
+Next.js frontend for the ADHD Task Manager application.
 
-## Features
+## Quick Start
 
-- 🧠 **ADHD-Focused Design**: Rock/Pebbles/Sand task prioritization
-- 🎨 **Visual Project Context**: Color-coded project tags across all views
-- 📱 **Responsive Design**: Works on desktop and mobile
-- ⚡ **Real-time Updates**: Powered by React Query
-- 🎯 **Impact-Based Organization**: Focus on what matters most
-- 👥 **Collaborative Features**: Groups and shared projects
-- 📊 **Analytics Dashboard**: Track your ADHD patterns
+```bash
+# Install dependencies
+npm install
 
-## Getting Started
+# Configure environment
+cp .env.local.example .env.local
+# Edit .env.local with your API and OAuth settings
 
-### Prerequisites
+# Start development server
+npm run dev
+```
 
-- Node.js 18+ 
-- npm or yarn
+## Access Points
+- Application: http://localhost:3000
+- API: http://localhost:8000
+
+## Environment Variables
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
+
+## Development
+```bash
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+## Testing
+```bash
+npm run test
+```
+
+For complete documentation, see the [docs-site](../docs-site/).
 - ADHD Task Manager API running on `http://localhost:8001`
 
 ### Installation
