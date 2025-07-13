@@ -51,16 +51,16 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Switch to non-root user
 USER nextjs
 
-# Expose port
+# Expose port (Cloud Run will set PORT env var)
 EXPOSE 3000
 
-# Set environment variable for port
+# Set environment variable for port - Cloud Run will override PORT
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Health check
+# Health check - use PORT env var
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/api/health || exit 1
 
 # Start the application
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "PORT=${PORT} node server.js"]
