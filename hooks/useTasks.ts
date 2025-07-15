@@ -80,8 +80,9 @@ export const useTasks = (filters: any) => {
   });
 
   const completeTaskMutation = useMutation({
-    mutationFn: api.completeTask,
-    onMutate: async (taskId) => {
+    mutationFn: ({ taskId, completionData }: { taskId: string; completionData?: { actual_duration?: number; completion_notes?: string } }) => 
+      api.completeTask(taskId, completionData),
+    onMutate: async ({ taskId }) => {
       await queryClient.cancelQueries({ queryKey: ['tasks'] });
       const previousTasks = queryClient.getQueryData(['tasks', filters]);
 
@@ -94,7 +95,7 @@ export const useTasks = (filters: any) => {
 
       return { previousTasks };
     },
-    onError: (err, taskId, context) => {
+    onError: (err, { taskId }, context) => {
       if (context?.previousTasks) {
         queryClient.setQueryData(['tasks', filters], context.previousTasks);
       }

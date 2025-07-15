@@ -229,6 +229,37 @@ export type Group = SharedGroup;
 export type GroupInvitation = SharedGroupInvitation;
 export type GroupInvitationList = SharedGroupInvitationList;
 
+// Energy Log interfaces
+export interface EnergyLog {
+  id?: string;
+  user_id?: string;
+  energy_level: 'low' | 'medium' | 'high';
+  duration_minutes?: number;
+  notes?: string;
+  logged_at?: string;
+}
+
+export interface EnergyLogCreate {
+  energy_level: 'low' | 'medium' | 'high';
+  duration_minutes?: number;
+  notes?: string;
+}
+
+export interface EnergyLogResponse {
+  energy_log: Array<{
+    date: string;
+    time: string;
+    level: string;
+    duration: number;
+  }>;
+  patterns: {
+    best_focus_time: string;
+    typical_afternoon_dip: string;
+    secondary_peak: string;
+  };
+  insights: string[];
+}
+
 // API functions
 export const api = {
   // Tasks
@@ -269,8 +300,11 @@ export const api = {
     return response.data;
   },
 
-  completeTask: async (taskId: string) => {
-    const response = await apiClient.put(`/api/tasks/${taskId}/complete`);
+  completeTask: async (taskId: string, completionData?: {
+    actual_duration?: number;
+    completion_notes?: string;
+  }) => {
+    const response = await apiClient.put(`/api/tasks/${taskId}/complete`, completionData);
     return response.data;
   },
 
@@ -420,7 +454,48 @@ export const api = {
 
   // Analytics
   getAnalyticsDashboard: async () => {
-    const response = await apiClient.get('/api/analytics/dashboard/');
+    const response = await apiClient.get('/api/analytics/dashboard');
+    return response.data;
+  },
+
+  getAnalyticsPatterns: async (days: number = 30) => {
+    const response = await apiClient.get(`/api/analytics/patterns?days=${days}`);
+    return response.data;
+  },
+
+  getAnalyticsProgress: async () => {
+    const response = await apiClient.get('/api/analytics/progress');
+    return response.data;
+  },
+
+  getAnalyticsFocusSessions: async () => {
+    const response = await apiClient.get('/api/analytics/focus-sessions');
+    return response.data;
+  },
+
+  getAnalyticsTest: async () => {
+    const response = await apiClient.get('/api/analytics/test');
+    return response.data;
+  },
+
+  getAnalyticsTestPatterns: async () => {
+    const response = await apiClient.get('/api/analytics/test/patterns');
+    return response.data;
+  },
+
+  getAnalyticsTestProgress: async () => {
+    const response = await apiClient.get('/api/analytics/test/progress');
+    return response.data;
+  },
+
+  // Energy Log
+  getEnergyLog: async (): Promise<EnergyLogResponse> => {
+    const response = await apiClient.get('/api/users/energy-log');
+    return response.data;
+  },
+
+  logEnergyLevel: async (energyData: EnergyLogCreate) => {
+    const response = await apiClient.post('/api/users/energy-log', energyData);
     return response.data;
   },
 

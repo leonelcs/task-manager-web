@@ -87,7 +87,7 @@ export default function TasksPage() {
             <TaskCard 
               key={task.id} 
               task={task} 
-              onComplete={completeTask}
+              onComplete={(taskId, completionData) => completeTask({ taskId, completionData })}
               onUpdate={(taskId, updates) => updateTask({ taskId, updates })}
               onDelete={deleteTask}
             />

@@ -6,10 +6,11 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { formatForDateInput, parseFromDateInput, formatDateEuropean } from '@/lib/dateUtils';
 import DatePicker from '@/components/DatePicker';
+import TaskCompletionModal from '@/components/TaskCompletionModal';
 
 interface TaskCardProps {
   task: Task;
-  onComplete?: (taskId: string) => void;
+  onComplete?: (taskId: string, completionData?: { actual_duration?: number; completion_notes?: string }) => void;
   onUpdate?: (taskId: string, updates: Partial<Task>) => void;
   onDelete?: (taskId: string) => void;
   projectColor?: string;
@@ -43,6 +44,7 @@ const priorityConfig = {
 export default function TaskCard({ task, onComplete, onUpdate, onDelete, projectColor }: TaskCardProps) {
   const [showActions, setShowActions] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [editForm, setEditForm] = useState({
     title: task.title,
     description: task.description || '',
@@ -119,6 +121,19 @@ export default function TaskCard({ task, onComplete, onUpdate, onDelete, project
       ...prev, 
       due_date: isoDate || '' 
     }));
+  };
+
+  const handleCompleteClick = () => {
+    if (task.status === 'completed') return;
+    setShowCompletionModal(true);
+  };
+
+  const handleCompleteConfirm = async (actualDuration: number, notes?: string) => {
+    const completionData = {
+      actual_duration: actualDuration,
+      ...(notes && { completion_notes: notes })
+    };
+    await onComplete?.(task.id, completionData);
   };
 
   // Handle keyboard shortcuts for edit mode
@@ -274,7 +289,7 @@ export default function TaskCard({ task, onComplete, onUpdate, onDelete, project
             
             <div className="flex items-center gap-1 ml-3">
               <button
-                onClick={() => onComplete?.(task.id)}
+                onClick={handleCompleteClick}
                 className="p-1 hover:bg-gray-100 rounded transition-colors"
                 disabled={task.status === 'completed'}
               >
@@ -360,6 +375,14 @@ export default function TaskCard({ task, onComplete, onUpdate, onDelete, project
           )}
         </>
       )}
+
+      <TaskCompletionModal
+        isOpen={showCompletionModal}
+        onClose={() => setShowCompletionModal(false)}
+        onConfirm={handleCompleteConfirm}
+        taskTitle={task.title}
+        estimatedDuration={task.estimated_duration}
+      />
     </div>
   );
 }

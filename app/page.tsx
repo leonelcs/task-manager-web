@@ -5,6 +5,7 @@ import { api, Task, Project } from '@/lib/api';
 import TaskCard from '@/components/TaskCard';
 import ProjectTag from '@/components/ProjectTag';
 import PendingInvitationsNotification from '@/components/PendingInvitationsNotification';
+import EnergyLogger from '@/components/EnergyLogger';
 import { getProjectColor } from '@/lib/utils';
 import { Plus, Brain, Target, Zap } from 'lucide-react';
 import Link from 'next/link';
@@ -35,9 +36,9 @@ export default function Dashboard() {
     sand: tasks.filter((task: Task) => task.impact_size === 'sand')
   };
 
-  const handleTaskComplete = async (taskId: string) => {
+  const handleTaskComplete = async (taskId: string, completionData?: { actual_duration?: number; completion_notes?: string }) => {
     try {
-      await api.completeTask(taskId);
+      await api.completeTask(taskId, completionData);
       // Refetch tasks after completion to remove completed task from dashboard
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     } catch (error) {
@@ -107,6 +108,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Energy Level Tracker */}
+      <EnergyLogger />
 
       {/* Rock/Pebbles/Sand Task Organization */}
       <div className="space-y-6">
